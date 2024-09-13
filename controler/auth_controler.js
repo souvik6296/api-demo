@@ -69,7 +69,7 @@ const home = async (req, res) => {
 
         const request = req.body;
         const plugid = request.plugid;
-        const query = request.query;
+        const reqquery = request.query;
 
 
 
@@ -103,7 +103,7 @@ const home = async (req, res) => {
                 body: JSON.stringify({
                     endpointId: 'predefined-openai-gpt4o',
                     query: query,
-                    pluginIds: ['plugin-1712327325', 'plugin-1713962163'],
+                    pluginIds: plugid,
                     responseMode: 'sync'
                 })
             });
@@ -116,7 +116,7 @@ const home = async (req, res) => {
         (async () => {
             const apiKey = api_key;
             const externalUserId = '<replace_external_user_id>';
-            const query = 'What is python';
+            const query = reqquery;
 
             try {
                 const sessionId = await createChatSession(apiKey, externalUserId);
