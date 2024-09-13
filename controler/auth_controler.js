@@ -5,8 +5,6 @@ const api_key = "n9uCEmenFs2c1Mhc72NAuwULk6pfMTHZ";
 
 const firebase = require("firebase/app");
 const firedatabase = require("firebase/database");
-const firestorage = require("firebase/storage");
-const { register } = require("../../server/controler/auth_controller");
 
 const firebaseConfig = {
     databaseURL: "https://medico-d0f60-default-rtdb.firebaseio.com/"
