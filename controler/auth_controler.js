@@ -37,80 +37,7 @@ const history = async (req, res) => {
 
 }
 
-const suggestion = async (req, res) => {
-    try {
 
-        const request = req.body;
-        const reqquery = request.query;
-        const reqresponse = request.response;
-        const plugid = request.plugid;
-
-
-        // Function to create a chat session
-        async function createChatSession(apiKey, externalUserId) {
-            const response = await fetch('https://api.on-demand.io/chat/v1/sessions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': apiKey
-                },
-                body: JSON.stringify({
-                    pluginIds: [],
-                    externalUserId: externalUserId
-                })
-            });
-
-            const data = await response.json();
-            return data.data.id; // Extract session ID
-        }
-
-        // Function to submit a query using the session ID
-        async function submitQuery(apiKey, sessionId, query) {
-
-
-            const response = await fetch(`https://api.on-demand.io/chat/v1/sessions/${sessionId}/query`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': apiKey
-                },
-                body: JSON.stringify({
-                    endpointId: 'predefined-openai-gpt4o',
-                    query: query,
-                    pluginIds: plugid,
-                    responseMode: 'sync'
-                })
-            });
-
-            const data = await response.json();
-            return data;
-        }
-
-
-        // Example usage
-        (async () => {
-            const apiKey = api_key;
-            const externalUserId = '<replace_external_user_id>';
-
-            try {
-                const mainquery = `my query was "${reqquery}" and i got response "${reqresponse}" now give me 5 suggestive question based on this query and response in comma separated list format no extra text.`;
-                const sessionId = await createChatSession(apiKey, externalUserId);
-                const response = await submitQuery(apiKey, sessionId, mainquery);
-
-
-                console.log(JSON.stringify(response));
-                res.set(200).send(JSON.stringify(response));
-
-            } catch (error) {
-                console.error('Error:', error);
-                res.set(200).send(error);
-            }
-        })();
-
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 const signup = async (req, res) => {
     try {
@@ -175,6 +102,79 @@ const home = async (req, res) => {
 
 
         const dbRef = firedatabase.ref(database);
+
+        async function suggestion(req) {
+            try {
+        
+                const reqquery = req.query;
+                const reqresponse = req.response;
+                const plugid = req.plugid;
+        
+        
+                // Function to create a chat session
+                async function createChatSession(apiKey, externalUserId) {
+                    const response = await fetch('https://api.on-demand.io/chat/v1/sessions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': apiKey
+                        },
+                        body: JSON.stringify({
+                            pluginIds: [],
+                            externalUserId: externalUserId
+                        })
+                    });
+        
+                    const data = await response.json();
+                    return data.data.id; // Extract session ID
+                }
+        
+                // Function to submit a query using the session ID
+                async function submitQuery(apiKey, sessionId, query) {
+        
+        
+                    const response = await fetch(`https://api.on-demand.io/chat/v1/sessions/${sessionId}/query`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': apiKey
+                        },
+                        body: JSON.stringify({
+                            endpointId: 'predefined-openai-gpt4o',
+                            query: query,
+                            pluginIds: plugid,
+                            responseMode: 'sync'
+                        })
+                    });
+        
+                    const data = await response.json();
+                    return data;
+                }
+        
+        
+                // Example usage
+                (async () => {
+                    const apiKey = api_key;
+                    const externalUserId = '<replace_external_user_id>';
+        
+                    try {
+                        const mainquery = `my query was "${reqquery}" and i got response "${reqresponse}" now give me 5 suggestive question based on this query and response in comma separated list format no extra text.`;
+                        const sessionId = await createChatSession(apiKey, externalUserId);
+                        const response = await submitQuery(apiKey, sessionId, mainquery);
+        
+        
+                        console.log(JSON.stringify(response));
+                        return JSON.stringify(response);
+        
+                    } catch (error) {
+                        return false;
+                    }
+                })();
+        
+            } catch (error) {
+                console.log(error);
+            }
+        }
 
 
         // Function to create a chat session
@@ -250,9 +250,23 @@ const home = async (req, res) => {
                 const sessionId = await createChatSession(apiKey, externalUserId);
                 const response = await submitQuery(apiKey, sessionId, query);
                 const res2 = await saveChattoDB(chatid, query, response.data.answer);
+                const jdata = {
+                    query : query,
+                    response : response.data.answer,
+                    plugid : plugid
+                }
                 if (res2) {
 
+                    const mainquery = `my query was "${query}" and i got response "${response.data.answer}" now give me 5 suggestive question based on this query and response in comma separated list format no extra text.`;
+                        
+                    
+                    const response01 = await submitQuery(apiKey, sessionId, mainquery);
+
+
                     console.log(JSON.stringify(response));
+                    console.log(JSON.stringify(response01.data.answer));
+                    let finallist = response01.data.answer.split(', ');
+                    response["suggestion"] = finallist;
                     res.set(200).send(JSON.stringify(response));
                 } else {
                     res.set(202).send("Unable to process");
@@ -332,4 +346,4 @@ const login = (async (req, res) => {
 
 })
 
-module.exports = { home, signup, login, history, suggestion };
+module.exports = { home, signup, login, history };
