@@ -67,6 +67,11 @@ const signup = async (req, res) => {
 const home = async (req, res) => {
     try {
 
+        const request = req.body;
+        const plugid = request.plugid;
+        const query = request.query;
+
+
 
 
         // Function to create a chat session

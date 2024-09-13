@@ -2,14 +2,16 @@
 const express = require("express");
 const router = express.Router();
 const controler = require("./controler/auth_controler");
+const cors = require('cors');
 
 const app = express();
 
 
 app.use(express.json());
+app.use(cors());
 
 
-router.route("/home").get(controler.home);
+router.route("/home").post(controler.home);
 router.route("/signup").post(controler.signup);
 router.route("/login").post(controler.login);
 
