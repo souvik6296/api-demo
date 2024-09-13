@@ -18,6 +18,8 @@ app.use(cors({
 router.route("/home").post(controler.home);
 router.route("/signup").post(controler.signup);
 router.route("/login").post(controler.login);
+router.route("/history").post(controler.history);
+router.route("/suggestion").post(controler.suggestion);
 
 
 app.use("/api", router);
