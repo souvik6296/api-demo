@@ -1,16 +1,12 @@
 
 const express = require("express");
 const router = express.Router();
-const controler = require("../server2/controler/auth_controler");
+const controler = require("./controler/auth_controler");
 
 const app = express();
 
 
 app.use(express.json());
-
-const orgname = "Personal";
-
-const orgid = "org-QB2KomASwSYG4AZ9XSEhrRAs";
 
 
 router.route("/home").get(controler.home);
