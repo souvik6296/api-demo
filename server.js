@@ -19,6 +19,7 @@ router.route("/home").post(controler.home);
 router.route("/signup").post(controler.signup);
 router.route("/login").post(controler.login);
 router.route("/history").post(controler.history);
+router.route("/ftrends").get(controler.financeTrends);
 
 
 app.use("/api", router);
